@@ -10,6 +10,9 @@ def save_content(name,description)
         file.print(description)
     end
 end
+def delete_element(name)
+    File.delete("texto/#{name}.txt")
+end
 
 get '/' do
     @files = Dir.entries("texto")    
@@ -25,7 +28,25 @@ get '/:nombre' do
     @description= workshop_content(@nombre)
     erb:taller
 end
-post '/create' do    
+get "/:name/edit" do
+    @name=params[:name]
+    @description=workshop_content(@name)
+    erb:edit
+end
+post '/create' do
+    @message="creado"    
     save_content(params["name"],params["description"])
+    erb:message
+end
+
+delete '/:name' do
+    @message="eliminado"
+    delete_element(params[:name])
+    erb:message
+end
+
+put '/:name' do    
+    save_content(params[:name],params["description"])
+    redirect URI.escape("/#{params[:name]}")
 end
 
